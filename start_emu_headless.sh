@@ -101,12 +101,3 @@ disable_animation
 sleep 1
 hidden_policy
 sleep 1
-
-launch_emulator
-sleep 2
-check_emulator_status
-sleep 1
-disable_animation
-sleep 1
-hidden_policy
-sleep 1
