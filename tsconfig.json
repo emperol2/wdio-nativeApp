@@ -9,5 +9,6 @@
       "@wdio/mocha-framework"
     ],
     "target": "es2022"
-  }
+  },
+  "include": ["src/test"]
 }

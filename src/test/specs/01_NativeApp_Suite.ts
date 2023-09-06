@@ -3,6 +3,7 @@ import AllureReporter from "@wdio/allure-reporter";
 
 describe("Native App Test Suite Example", () => {
   afterEach(async () => {
+    //@ts-ignore
     await browser.resetApp();
   });
 
