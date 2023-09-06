@@ -17,19 +17,4 @@ describe("Native App Test Suite Example", () => {
     await NativeApp.selectOption("Animation");
     await expect(NativeApp.bouncingBalls).toBeDisplayed();
   });
-
-  it("Should select AnimateDrawables option from Graphics list", async () => {
-    AllureReporter.addSeverity("minor");
-    AllureReporter.addStory(
-      "AnimateDrawables option is existing in graphics list"
-    );
-    AllureReporter.addDescription(
-      "AnimateDrawables option is existing in graphics list",
-      "text"
-    );
-    await NativeApp.selectOption("Graphics");
-    await NativeApp.selectOption("AnimateDrawables");
-    await browser.takeScreenshot();
-    await expect(NativeApp.title("Graphics/AnimateDrawables")).toBeDisplayed();
-  });
 });

@@ -1,5 +1,4 @@
-import { exec, ExecException } from 'child_process';
-
+import { exec, ExecException } from "child_process";
 
 async function resetApp() {
   const appPackage = await driver.getCurrentPackage();
@@ -16,5 +15,5 @@ async function resetApp() {
 }
 
 export default function CustomCommands() {
-  browser.addCommand('resetApp', resetApp);
+  return browser.addCommand("resetApp", resetApp);
 }
