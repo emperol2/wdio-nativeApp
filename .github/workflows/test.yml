@@ -12,7 +12,7 @@ on:
 jobs:
   test:
     name: Run tests on instance ${{ matrix.instance }}
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
@@ -33,8 +33,17 @@ jobs:
           distribution: "adopt"
           java-version: "11"
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v2
+      - name: Install brew (Homebrew is pre-installed on macOS runners, but this ensures it's updated)
+        run: brew update
+
+      - name: Install Android SDK
+        run: |
+          brew install --cask android-sdk
+
+      - name: Set up Android environment variables
+        run: |
+          echo "export ANDROID_HOME=/usr/local/share/android-sdk" >> $GITHUB_ENV
+          echo "export ANDROID_SDK_ROOT=/usr/local/share/android-sdk" >> $GITHUB_ENV
 
       - name: Install Android tools
         run: |
@@ -44,7 +53,7 @@ jobs:
       - name: Create and start emulator
         run: |
           echo "no" | avdmanager create avd --force --name "pixel-${{ matrix.instance }}" --package "system-images;android-30;default;x86_64" --sdcard 512M
-          $ANDROID_HOME/emulator/emulator -avd pixel-${{ matrix.instance }} -no-audio -no-window &
+          $ANDROID_SDK_ROOT/emulator/emulator -avd pixel-${{ matrix.instance }} -no-audio -no-window &
           adb wait-for-device
 
       - name: Install dependencies
@@ -57,7 +66,7 @@ jobs:
           appium &
 
       - name: Run tests for instance ${{ matrix.instance }}
-        run: npm test --suite instance${{ matrix.instance }} # Assuming you've configured WebDriverIO to recognize suite args
+        run: npx wdio src/test/config/mobile.conf.ts --suite instance${{ matrix.instance }} # Assuming you've configured WebDriverIO to recognize suite args
 
       - name: Upload Appium logs
         if: always()
