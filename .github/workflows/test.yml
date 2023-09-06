@@ -73,8 +73,8 @@ jobs:
 
       - name: Start Appium Server
         run: |
-          npm install -g appium
-          appium &
+          npm i -g appium@next --unsafe-perm=true --allow-root
+          appium driver install uiautomator2
 
       - name: Run tests for instance ${{ matrix.instance }}
         run: npx wdio src/test/config/mobile.conf.ts --suite instance${{ matrix.instance }} # Assuming you've configured WebDriverIO to recognize suite args
