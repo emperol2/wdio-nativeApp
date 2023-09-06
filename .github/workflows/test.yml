@@ -51,6 +51,15 @@ jobs:
       - name: Install Android tools
         run: |
           echo "y" | sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.2" "emulator"
+          yes | sdkmanager --licenses
+
+      - name: List available system images
+        run: |
+          sdkmanager --list
+
+      - name: Download required system image
+        run: |
+          echo "y" | sdkmanager "system-images;android-30;default;x86_64"
 
       - name: Create and start emulator
         run: |
