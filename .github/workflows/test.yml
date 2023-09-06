@@ -1,0 +1,67 @@
+name: Run Appium Tests with WebDriverIO on Android Emulator
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - nuttaponp/test-2
+  push:
+    branches:
+      - nuttaponp/test-2
+
+jobs:
+  test:
+    name: Run tests on instance ${{ matrix.instance }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        instance: [1, 2] # Define the number of parallel instances here
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v2
+
+      - name: Install Android tools
+        run: |
+          echo "y" | sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.2" "emulator"
+          echo "y" | sdkmanager --install "system-images;android-30;default;x86_64"
+
+      - name: Create and start emulator
+        run: |
+          echo "no" | avdmanager create avd --force --name "pixel-${{ matrix.instance }}" --package "system-images;android-30;default;x86_64" --sdcard 512M
+          $ANDROID_HOME/emulator/emulator -avd pixel-${{ matrix.instance }} -no-audio -no-window &
+          adb wait-for-device
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Start Appium Server
+        run: |
+          npm install -g appium
+          appium &
+
+      - name: Run tests for instance ${{ matrix.instance }}
+        run: npm test --suite instance${{ matrix.instance }} # Assuming you've configured WebDriverIO to recognize suite args
+
+      - name: Upload Appium logs
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: appium-logs-${{ matrix.instance }}
+          path: /path/to/your/appium/logs/ # Replace with the actual path to your Appium logs
